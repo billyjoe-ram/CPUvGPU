@@ -10,7 +10,7 @@ namespace algebra {
  * Realiza a operação Y = a * X + Y.
  * Segue o princípio KISS: direto ao ponto, sem classes desnecessárias.
  */
-    void apply_saxpy(float multiplier, const std::vector<float>& input_x, std::vector<float>& result_y) {
+    inline void apply_saxpy(float multiplier, const std::vector<float>& input_x, std::vector<float>& result_y) {
         if (input_x.size() != result_y.size()) {
             throw std::invalid_argument("Vector sizes must be identical for SAXPY operation.");
         }
