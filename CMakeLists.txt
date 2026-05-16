@@ -4,4 +4,5 @@ project(CPUvGPU)
 set(CMAKE_CXX_STANDARD 17)
 
 add_executable(CPUvGPU main.cpp
-        saxpy/saxpy.hpp)
+        saxpy/saxpy.hpp
+        saxpy/saxpy_test.cpp)
