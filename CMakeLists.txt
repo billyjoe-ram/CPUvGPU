@@ -6,4 +6,5 @@ set(CMAKE_CXX_STANDARD 17)
 add_executable(CPUvGPU main.cpp
         saxpy/saxpy.hpp
         saxpy/saxpy_test.cpp
-        CPU/cpu_simulator.hpp)
+        CPU/cpu_simulator.hpp
+        CPU/gpu_simulator.hpp)
