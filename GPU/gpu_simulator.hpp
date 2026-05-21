@@ -2,68 +2,91 @@
 #define CPUVGPU_GPU_SIMULATOR_HPP
 
 #include <vector>
+#include <map>
 #include <cstdint>
 #include <stdexcept>
+#include <iostream>
 
 namespace gpu_sim {
 
-    enum OpCode : int32_t {
-        OP_IADD = 1,
-        OP_STORE = 2,
-        OP_RETURN = 0
+    enum class SpvOp : int32_t {
+        OpConstant = 10,
+        OpVariable = 11,
+        OpLoad     = 12,
+        OpIAdd     = 13,
+        OpStore    = 14,
+        OpReturn   = 15,
+        HALT       = 0
+    };
+
+    struct GpuMemory {
+        std::vector<int32_t> uniform_buffer;
+        GpuMemory(size_t size) : uniform_buffer(size, 0) {}
     };
 
     /**
-     * @brief Representation of a generic SIMT Graphics Processing Unit.
-     * Simulates parallel execution of instructions across a grid of threads.
+     * @brief Simulador de uma Unidade de Execução (EU/CU) de GPU
      */
-    struct GPUEngine {
-        std::size_t target_thread_count;
+    struct GPU_Core {
+        int32_t pc = 0;
 
-        inline GPUEngine(std::size_t thread_count) : target_thread_count(thread_count) {
-            if (thread_count == 0) {
-                throw std::invalid_argument("Thread count must be greater than zero.");
-            }
-        }
+        std::map<uint32_t, int32_t> id_table;
 
-        /**
-         * @brief Executes intermediate shader instructions across all allocated virtual threads.
-         */
-        inline void execute_shader(const std::vector<int32_t>& instruction_stream, std::vector<int32_t>& uniform_buffer) {
-            if (instruction_stream.empty()) {
-                throw std::invalid_argument("Instruction stream cannot be empty.");
-            }
+        std::map<uint32_t, uint32_t> pointer_map;
 
-            for (std::size_t thread_index = 0; thread_index < target_thread_count; ++thread_index) {
-                std::size_t program_counter = 0;
-                int32_t local_registers[4] = {0, 0, 0, 0};
+        std::vector<int32_t> program;
+        GpuMemory& vram;
 
-                while (true) {
-                    int32_t current_opcode = instruction_stream[program_counter];
-                    program_counter++;
+        GPU_Core(GpuMemory& m) : vram(m) {}
 
-                    if (current_opcode == OpCode::OP_RETURN) {
+        void execute() {
+            while (true) {
+                SpvOp op = static_cast<SpvOp>(program[pc++]);
+
+                if (op == SpvOp::HALT || op == SpvOp::OpReturn) break;
+
+                switch (op) {
+                    case SpvOp::OpConstant: {
+                        uint32_t result_id = program[pc++];
+                        int32_t value = program[pc++];
+                        id_table[result_id] = value;
                         break;
                     }
 
-                    if (current_opcode == OpCode::OP_IADD) {
-                        std::size_t destination_register = static_cast<std::size_t>(instruction_stream[program_counter++]);
-                        int32_t first_operand = instruction_stream[program_counter++];
-                        int32_t second_operand = instruction_stream[program_counter++];
-                        local_registers[destination_register] = first_operand + second_operand;
+                    case SpvOp::OpVariable: {
+                        uint32_t result_id = program[pc++];
+                        uint32_t mem_address = program[pc++];
+                        pointer_map[result_id] = mem_address;
+                        break;
                     }
-                    else if (current_opcode == OpCode::OP_STORE) {
-                        std::size_t target_address = static_cast<std::size_t>(instruction_stream[program_counter++]);
-                        std::size_t source_register = static_cast<std::size_t>(instruction_stream[program_counter++]);
 
-                        if (target_address >= uniform_buffer.size()) {
-                            throw std::out_of_range("Target memory address is out of bounds.");
-                        }
-                        uniform_buffer[target_address] = local_registers[source_register];
+                    case SpvOp::OpLoad: {
+                        uint32_t result_id = program[pc++];
+                        uint32_t pointer_id = program[pc++];
+                        uint32_t addr = pointer_map[pointer_id];
+                        // Simula a latência de busca na VRAM
+                        id_table[result_id] = vram.uniform_buffer[addr];
+                        break;
                     }
-                    else {
-                        throw std::runtime_error("Invalid or unsupported GPU opcode encountered.");
+
+                    case SpvOp::OpIAdd: {
+                        uint32_t result_id = program[pc++];
+                        uint32_t id_left = program[pc++];
+                        uint32_t id_right = program[pc++];
+                        id_table[result_id] = id_table[id_left] + id_table[id_right];
+                        break;
                     }
+
+                    case SpvOp::OpStore: {
+                        uint32_t pointer_id = program[pc++];
+                        uint32_t source_id = program[pc++];
+                        uint32_t addr = pointer_map[pointer_id];
+                        vram.uniform_buffer[addr] = id_table[source_id];
+                        break;
+                    }
+
+                    default:
+                        throw std::runtime_error("Instrução SPIR-V não implementada ou inválida");
                 }
             }
         }
