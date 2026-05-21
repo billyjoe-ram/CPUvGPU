@@ -1,6 +1,7 @@
 #include <iostream>
 #include <vector>
 #include "CPU/cpu_simulator.hpp"
+#include "CPU/gpu_simulator.hpp"
 
 int main() {
     std::cout << "Hello, World!" << std::endl;
@@ -38,6 +39,22 @@ int main() {
     }
     catch (const std::exception& e) {
         std::cerr << "Error: " << e.what() << std::endl;
+        return 1;
+    }
+
+    std::cout << "GPU" << std::endl;
+
+    try {
+        auto shader_program = std::vector<int32_t>{1, 0, 10, 20, 2, 0, 0, 0};
+        auto global_uniform_buffer = std::vector<int32_t>{0};
+
+        gpu_sim::GPUEngine virtual_gpu(64);
+        virtual_gpu.execute_shader(shader_program, global_uniform_buffer);
+
+        std::cout << global_uniform_buffer[0] << std::endl;
+    }
+    catch (const std::exception& error) {
+        std::cerr << error.what() << std::endl;
         return 1;
     }
 
