@@ -1,7 +1,7 @@
 #include <iostream>
 #include <vector>
 #include "CPU/cpu_simulator.hpp"
-#include "CPU/gpu_simulator.hpp"
+#include "GPU/gpu_simulator.hpp"
 
 int main() {
     std::cout << "Hello, World!" << std::endl;
