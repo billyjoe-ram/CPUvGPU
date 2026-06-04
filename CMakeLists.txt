@@ -9,4 +9,6 @@ add_executable(CPUvGPU main.cpp
         CPU/cpu_simulator.hpp
         GPU/gpu_simulator.hpp
         monte_carlo/monte_carlo.hpp
-        monte_carlo/monte_carlo_test.cpp)
+        monte_carlo/monte_carlo_test.cpp
+        bubble_sort/bubble_sort_test.cpp
+        bubble_sort/bubble_sort.hpp)
