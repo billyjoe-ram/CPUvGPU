@@ -13,4 +13,5 @@ add_executable(CPUvGPU main.cpp
         bubble_sort/bubble_sort_test.cpp
         bubble_sort/bubble_sort.hpp
         constraint_solver/constraint_solver.hpp
-        constraint_solver/constraint_solver_test.cpp)
+        constraint_solver/constraint_solver_test.cpp
+)
