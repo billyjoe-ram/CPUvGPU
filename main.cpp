@@ -3,12 +3,34 @@
 #include "CPU/cpu_simulator.hpp"
 #include "GPU/gpu_simulator.hpp"
 
+void saxpy_riscv_cpu(cpu_sim::RISCV_CPU& cpu, float multiplier, const std::vector<float>& input_x, std::vector<float>& result_y);
+
 int main() {
     std::cout << "Hello, World!" << std::endl;
 
     std::cout << "CPU" << std::endl;
 
-    std::cout << "TBD" << std::endl;
+    std::cout << "..." << std::endl;
+
+    std::cout << "SAXPY" << std::endl;
+
+    try {
+        cpu_sim::RISCV_CPU cpu{2048};
+        float multiplier = 2.5f;
+        std::vector<float> input_x = {1.0f, 2.0f, 3.0f, 4.0f};
+        std::vector<float> result_y = {10.0f, 20.0f, 30.0f, 40.0f};
+
+        saxpy_riscv_cpu(cpu, multiplier, input_x, result_y);
+
+        for (std::size_t i = 0; i < result_y.size(); ++i) {
+            std::cout << result_y[i] << " ";
+        }
+        std::cout << std::endl;
+    }
+    catch (const std::exception& exception) {
+        std::cerr << exception.what() << std::endl;
+        return 1;
+    }
 
     std::cout << "GPU" << std::endl;
 

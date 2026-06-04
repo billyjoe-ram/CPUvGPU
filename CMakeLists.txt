@@ -14,4 +14,5 @@ add_executable(CPUvGPU main.cpp
         bubble_sort/bubble_sort.hpp
         constraint_solver/constraint_solver.hpp
         constraint_solver/constraint_solver_test.cpp
+        saxpy/saxpy_riscv_cpu.cpp
 )
