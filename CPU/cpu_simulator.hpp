@@ -19,7 +19,10 @@ namespace cpu_sim {
         ADD     = 4,  // Somar dois registradores inteiros (calcular endereço de memória)
         FLW     = 5,  // Floating-point Load Word (ler float da memória)
         FSW     = 6,  // Floating-point Store Word (escrever float na memória)
-        FMADD_S = 7   // Fused Multiply-Add (fa2 = fa0 * fa1 + fa2)
+        FMADD_S = 7,   // Fused Multiply-Add (fa2 = fa0 * fa1 + fa2)
+        BLT     = 8,  // Para o Bubble Sort ordenar
+        RAND_F  = 9,  // Para o Monte Carlo sortear
+        AND     = 10  // Para o Constraint Solver filtrar
     };
 
     struct RISCV_CPU {
@@ -116,6 +119,30 @@ namespace cpu_sim {
                         int32_t rs1 = fetch_int32();
                         int32_t imm = fetch_int32();
                         x_regs[rd] = x_regs[rs1] + imm;
+                        break;
+                    }
+
+                    case OpCode::BLT: {
+                        int32_t r1 = fetch_int32();
+                        int32_t r2 = fetch_int32();
+                        int32_t offset = fetch_int32();
+                        if (x_regs[r1] < x_regs[r2]) {
+                            pc = offset;
+                        }
+                        break;
+                    }
+
+                    case OpCode::RAND_F: {
+                        int32_t fd = fetch_int32();
+                        f_regs[fd] = static_cast<float>(std::rand()) / static_cast<float>(RAND_MAX);
+                        break;
+                    }
+
+                    case OpCode::AND: {
+                        int32_t rd = fetch_int32();
+                        int32_t rs1 = fetch_int32();
+                        int32_t rs2 = fetch_int32();
+                        x_regs[rd] = x_regs[rs1] & x_regs[rs2];
                         break;
                     }
 
