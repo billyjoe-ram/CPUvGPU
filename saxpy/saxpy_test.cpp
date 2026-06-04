@@ -13,7 +13,7 @@ int saxpy_test() {
     float scalar = 2.5f;
 
     try {
-        algebra::apply_saxpy(scalar, input_x, result_y);
+        algorithms::apply_saxpy(scalar, input_x, result_y);
 
         for (float value : result_y) {
             std::cout << value << " ";
