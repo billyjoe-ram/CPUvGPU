@@ -10,6 +10,11 @@ void monte_carlo_riscv_cpu(cpu_sim::RISCV_CPU& cpu, float volatility, std::size_
 void bubble_sort_riscv_cpu(cpu_sim::RISCV_CPU& cpu, const std::vector<float>& input_elements, std::vector<float>& sorted_elements);
 void constraint_solver_riscv_cpu(cpu_sim::RISCV_CPU& cpu, int total_colors, const std::vector<int32_t>& graph_bitmasks, std::vector<int32_t>& color_assignments);
 
+void saxpy_gpu(gpu_sim::GpuMemory& memory, int32_t multiplier, const std::vector<int32_t>& input_x, std::vector<int32_t>& result_y);
+void monte_carlo_gpu(gpu_sim::GpuMemory& memory, int32_t shock_factor, int32_t simulation_steps, const std::vector<int32_t>& current_prices, std::vector<int32_t>& predicted_prices);
+void bubble_sort_gpu(gpu_sim::GpuMemory& memory, const std::vector<int32_t>& input_elements, std::vector<int32_t>& sorted_elements);
+void constraint_solver_gpu(gpu_sim::GpuMemory& memory, const std::vector<int32_t>& graph_constraints, std::vector<int32_t>& color_assignments);
+
 int main() {
     std::cout << "Iniciando contador..." << std::endl;
 
@@ -17,7 +22,7 @@ int main() {
 
     std::cout << "CPU" << std::endl;
 
-    std::cout << "..." << std::endl;
+    std::cout << "...\n\n" << std::endl;
 
     std::cout << "SAXPY" << std::endl;
 
@@ -43,7 +48,7 @@ int main() {
 
     auto tempo_fim_saxpy = std::chrono::high_resolution_clock::now();
     std::chrono::duration<double, std::milli> duracao_saxpy = tempo_fim_saxpy - tempo_inicio_saxpy;
-    std::cout << "Tempo SAXPY: " << duracao_saxpy.count() << " ms" << std::endl;
+    std::cout << "Tempo SAXPY: " << duracao_saxpy.count() << " ms\n\n" << std::endl;
 
     std::cout << "MONTE CARLO" << std::endl;
 
@@ -70,7 +75,7 @@ int main() {
 
     auto tempo_fim_monte_carlo = std::chrono::high_resolution_clock::now();
     std::chrono::duration<double, std::milli> duracao_monte_carlo = tempo_fim_monte_carlo - tempo_inicio_monte_carlo;
-    std::cout << "Tempo Monte Carlo: " << duracao_monte_carlo.count() << " ms" << std::endl;
+    std::cout << "Tempo Monte Carlo: " << duracao_monte_carlo.count() << " ms\n\n" << std::endl;
 
     std::cout << "BUBBLE SORT" << std::endl;
 
@@ -105,7 +110,7 @@ int main() {
     auto tempo_fim_bubble_sort = std::chrono::high_resolution_clock::now();
 
     std::chrono::duration<double, std::milli> duracao_bubble_sort = tempo_fim_bubble_sort - tempo_inicio_bubble_sort;
-    std::cout << "Tempo Bubble Sort: " << duracao_bubble_sort.count() << " ms" << std::endl;
+    std::cout << "Tempo Bubble Sort: " << duracao_bubble_sort.count() << " ms\n\n" << std::endl;
 
     std::cout << "CONSTRAINT SOLVER" << std::endl;
 
@@ -133,7 +138,7 @@ int main() {
 
     auto tempo_fim_constraint = std::chrono::high_resolution_clock::now();
     std::chrono::duration<double, std::milli> duracao_constraint = tempo_fim_constraint - tempo_inicio_constraint;
-    std::cout << "Tempo Constraint Solver: " << duracao_constraint.count() << " ms" << std::endl;
+    std::cout << "Tempo Constraint Solver: " << duracao_constraint.count() << " ms\n\n" << std::endl;
 
     auto tempo_fim_programa = std::chrono::high_resolution_clock::now();
     std::chrono::duration<double, std::milli> duracao_total = tempo_fim_programa - tempo_inicio_programa;
@@ -141,7 +146,7 @@ int main() {
     auto tempo_fim_cpu = std::chrono::high_resolution_clock::now();
     std::chrono::duration<double, std::milli> duracao_total_cpu = tempo_fim_cpu - tempo_inicio_programa;
 
-    std::cout << "Fim do contador CPU" << std::endl;
+    std::cout << "Fim do contador CPU\n\n" << std::endl;
 
     std::cout << "..." << std::endl;
 
@@ -159,56 +164,105 @@ int main() {
     }
     auto fim_pausa_usuario = std::chrono::high_resolution_clock::now();
 
-    auto tempo_atual_pos_input = std::chrono::high_resolution_clock::now();
-    std::chrono::duration<double, std::milli> tempo_bruto_total = tempo_atual_pos_input - tempo_inicio_programa;
-
     std::chrono::duration<double, std::milli> tempo_da_pausa = fim_pausa_usuario - inicio_pausa_usuario;
 
     std::cout << "GPU" << std::endl;
 
-    std::chrono::duration<double, std::milli> duracao_total_descontada = tempo_bruto_total - tempo_da_pausa;
+    std::cout << "SAXPY" << std::endl;
 
-    std::cout << "Tempo Total do Programa: " << duracao_total_descontada.count() << " ms" << std::endl;
+    auto tempo_inicio_saxpy_gpu = std::chrono::high_resolution_clock::now();
+    try {
+        gpu_sim::GpuMemory memory{1024};
+        int32_t multiplier = 2;
+        std::vector<int32_t> input_x = {1, 2, 3, 4};
+        std::vector<int32_t> result_y = {10, 20, 30, 40};
 
-    gpu_sim::GpuMemory vram(1024);
+        saxpy_gpu(memory, multiplier, input_x, result_y);
 
-    vram.uniform_buffer[100] = 10; // Endereço 100 contém o valor 10
-    vram.uniform_buffer[101] = 20; // Endereço 101 contém o valor 20
-    vram.uniform_buffer[102] = 0;  // Endereço 102 guardará o resultado
+        for (std::size_t i = 0; i < result_y.size(); ++i) {
+            std::cout << result_y[i] << " ";
+        }
+        std::cout << std::endl;
+    }
+    catch (const std::exception& exception) {
+        std::cerr << exception.what() << std::endl;
+    }
+    auto tempo_fim_saxpy_gpu = std::chrono::high_resolution_clock::now();
+    std::chrono::duration<double, std::milli> duracao_saxpy_gpu = tempo_fim_saxpy_gpu - tempo_inicio_saxpy_gpu;
+    std::cout << "Tempo SAXPY: " << duracao_saxpy_gpu.count() << " ms\n\n" << std::endl;
 
-    gpu_sim::GPU_Core core(vram);
+    std::cout << "Monte Carlo" << std::endl;
+    auto tempo_inicio_monte_carlo_gpu = std::chrono::high_resolution_clock::now();
+    try {
+        gpu_sim::GpuMemory memory{1024};
+        int32_t shock_factor = 5;
+        int32_t simulation_steps = 10;
+        std::vector<int32_t> current_prices = {100, 200, 300, 400};
+        std::vector<int32_t> predicted_prices = {0, 0, 0, 0};
 
-    /** * Representação binária do SPIR-V montado anteriormente:
-     * No SPIR-V real, os IDs são gerados sequencialmente.
-     */
-    core.program = {
-            (int32_t)gpu_sim::SpvOp::OpVariable, 1, 100,
-            (int32_t)gpu_sim::SpvOp::OpVariable, 2, 101,
-            (int32_t)gpu_sim::SpvOp::OpVariable, 3, 102,
+        monte_carlo_gpu(memory, shock_factor, simulation_steps, current_prices, predicted_prices);
 
-            (int32_t)gpu_sim::SpvOp::OpLoad, 4, 1,
-            (int32_t)gpu_sim::SpvOp::OpLoad, 5, 2,
+        for (std::size_t i = 0; i < predicted_prices.size(); ++i) {
+            std::cout << predicted_prices[i] << " ";
+        }
+        std::cout << std::endl;
+    }
+    catch (const std::exception& exception) {
+        std::cerr << exception.what() << std::endl;
+    }
+    auto tempo_fim_monte_carlo_gpu = std::chrono::high_resolution_clock::now();
+    std::chrono::duration<double, std::milli> duracao_monte_carlo_gpu = tempo_fim_monte_carlo_gpu - tempo_inicio_monte_carlo_gpu;
+    std::cout << "Tempo Monte Carlo: " << duracao_monte_carlo_gpu.count() << " ms\n\n" << std::endl;
 
-            (int32_t)gpu_sim::SpvOp::OpIAdd, 6, 4, 5,
+    std::cout << "Bubble Sort" << std::endl;
+    auto tempo_inicio_bubble_gpu = std::chrono::high_resolution_clock::now();
+    try {
+        gpu_sim::GpuMemory memory{1024};
+        std::vector<int32_t> input_elements = {40, 20, 10, 30};
+        std::vector<int32_t> sorted_elements = {0, 0, 0, 0};
 
-            (int32_t)gpu_sim::SpvOp::OpStore, 3, 6,
+        bubble_sort_gpu(memory, input_elements, sorted_elements);
 
-            (int32_t)gpu_sim::SpvOp::OpReturn
-    };
+        for (std::size_t i = 0; i < sorted_elements.size(); ++i) {
+            std::cout << sorted_elements[i] << " ";
+        }
+        std::cout << std::endl;
+    }
+    catch (const std::exception& exception) {
+        std::cerr << exception.what() << std::endl;
+    }
+    auto tempo_fim_bubble_gpu = std::chrono::high_resolution_clock::now();
+    std::chrono::duration<double, std::milli> duracao_bubble_gpu = tempo_fim_bubble_gpu - tempo_inicio_bubble_gpu;
+    std::cout << "Tempo Bubble Sort: " << duracao_bubble_gpu.count() << " ms\n\n" << std::endl;
 
-    std::cout << "Iniciando Kernel SPIR-V na GPU..." << std::endl;
+    std::cout << "Constraint Solver" << std::endl;
+    auto tempo_inicio_constraint_gpu = std::chrono::high_resolution_clock::now();
 
     try {
-        core.execute();
+        gpu_sim::GpuMemory memory{1024};
+        std::vector<int32_t> graph_constraints = {1, 1, 0, 1};
+        std::vector<int32_t> color_assignments = {0, 0, 0, 0};
 
-        std::cout << "Execução finalizada." << std::endl;
-        std::cout << "Resultado na VRAM (addr 102): " << vram.uniform_buffer[102] << std::endl;
+        constraint_solver_gpu(memory, graph_constraints, color_assignments);
 
-        std::cout << "ID %6 (Resultado da ALU): " << core.id_table[6] << std::endl;
+        for (std::size_t i = 0; i < color_assignments.size(); ++i) {
+            std::cout << color_assignments[i] << " ";
+        }
+        std::cout << std::endl;
     }
-    catch (const std::exception& e) {
-        std::cerr << "GPU Exception: " << e.what() << std::endl;
+    catch (const std::exception& exception) {
+        std::cerr << exception.what() << std::endl;
     }
+
+    auto tempo_fim_constraint_gpu = std::chrono::high_resolution_clock::now();
+    std::chrono::duration<double, std::milli> duracao_constraint_gpu = tempo_fim_constraint_gpu - tempo_inicio_constraint_gpu;
+    std::cout << "Tempo Constraint Solver: " << duracao_constraint_gpu.count() << " ms\n\n" << std::endl;
+
+    tempo_fim_programa = std::chrono::high_resolution_clock::now();
+
+    std::chrono::duration<double, std::milli> duracao_total_descontada = (tempo_fim_programa - tempo_inicio_programa) - tempo_da_pausa;
+
+    std::cout << "Tempo Total do Programa: " << duracao_total_descontada.count() << " ms" << std::endl;
 
     return 0;
 }
