@@ -6,7 +6,7 @@
 /**
  * @brief Translates and executes the SAXPY algorithm on the simulated GPU using bytecode instructions.
  */
-void execute_saxpy_gpu(gpu_sim::GpuMemory& memory, int32_t multiplier, const std::vector<int32_t>& input_x, std::vector<int32_t>& result_y) {
+void saxpy_gpu(gpu_sim::GpuMemory& memory, int32_t multiplier, const std::vector<int32_t>& input_x, std::vector<int32_t>& result_y) {
     if (input_x.size() != result_y.size()) {
         throw std::invalid_argument("Vector sizes must be identical for SAXPY operation.");
     }
