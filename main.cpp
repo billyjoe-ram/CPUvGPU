@@ -1,4 +1,5 @@
 #include <iostream>
+#include <chrono>
 #include <vector>
 #include "CPU/cpu_simulator.hpp"
 #include "GPU/gpu_simulator.hpp"
@@ -9,13 +10,17 @@ void bubble_sort_riscv_cpu(cpu_sim::RISCV_CPU& cpu, const std::vector<float>& in
 void constraint_solver_riscv_cpu(cpu_sim::RISCV_CPU& cpu, int total_colors, const std::vector<int32_t>& graph_bitmasks, std::vector<int32_t>& color_assignments);
 
 int main() {
-    std::cout << "Hello, World!" << std::endl;
+    std::cout << "Iniciando contador..." << std::endl;
+
+    auto tempo_inicio_programa = std::chrono::high_resolution_clock::now();
 
     std::cout << "CPU" << std::endl;
 
     std::cout << "..." << std::endl;
 
     std::cout << "SAXPY" << std::endl;
+
+    auto tempo_inicio_saxpy = std::chrono::high_resolution_clock::now();
 
     try {
         cpu_sim::RISCV_CPU cpu{2048};
@@ -35,7 +40,13 @@ int main() {
         return 1;
     }
 
+    auto tempo_fim_saxpy = std::chrono::high_resolution_clock::now();
+    std::chrono::duration<double, std::milli> duracao_saxpy = tempo_fim_saxpy - tempo_inicio_saxpy;
+    std::cout << "Tempo SAXPY: " << duracao_saxpy.count() << " ms" << std::endl;
+
     std::cout << "MONTE CARLO" << std::endl;
+
+    auto tempo_inicio_monte_carlo = std::chrono::high_resolution_clock::now();
 
     try {
         cpu_sim::RISCV_CPU cpu{8192};
@@ -55,6 +66,10 @@ int main() {
         std::cerr << exception.what() << std::endl;
         return 1;
     }
+
+    auto tempo_fim_monte_carlo = std::chrono::high_resolution_clock::now();
+    std::chrono::duration<double, std::milli> duracao_monte_carlo = tempo_fim_monte_carlo - tempo_inicio_monte_carlo;
+    std::cout << "Tempo Monte Carlo: " << duracao_monte_carlo.count() << " ms" << std::endl;
 
     std::cout << "BUBBLE SORT" << std::endl;
 
@@ -86,6 +101,8 @@ int main() {
 
     std::cout << "CONSTRAINT SOLVER" << std::endl;
 
+    auto tempo_inicio_constraint = std::chrono::high_resolution_clock::now();
+
     try {
         std::vector<int32_t> graph_bitmasks = {2, 5, 2};
         std::vector<int32_t> color_output(graph_bitmasks.size(), 0);
@@ -106,7 +123,24 @@ int main() {
         return 1;
     }
 
+    auto tempo_fim_constraint = std::chrono::high_resolution_clock::now();
+    std::chrono::duration<double, std::milli> duracao_constraint = tempo_fim_constraint - tempo_inicio_constraint;
+    std::cout << "Tempo Constraint Solver: " << duracao_constraint.count() << " ms" << std::endl;
+
+    auto tempo_fim_programa = std::chrono::high_resolution_clock::now();
+    std::chrono::duration<double, std::milli> duracao_total = tempo_fim_programa - tempo_inicio_programa;
+
+    std::cout << "Fim do contador CPU" << std::endl;
+
+    std::cout << "..." << std::endl;
+
     std::cout << "GPU" << std::endl;
+
+    auto tempo_fim_cpu = std::chrono::high_resolution_clock::now();
+    std::chrono::duration<double, std::milli> duracao_total_cpu = tempo_fim_cpu - tempo_inicio_programa;
+
+    std::cout << "Fim do contador CPU" << std::endl;
+    std::cout << "Tempo Total do Programa: " << duracao_total_cpu.count() << " ms" << std::endl;
 
     gpu_sim::GpuMemory vram(1024);
 
