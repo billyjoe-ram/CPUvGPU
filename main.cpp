@@ -4,6 +4,7 @@
 #include "GPU/gpu_simulator.hpp"
 
 void saxpy_riscv_cpu(cpu_sim::RISCV_CPU& cpu, float multiplier, const std::vector<float>& input_x, std::vector<float>& result_y);
+void monte_carlo_riscv_cpu(cpu_sim::RISCV_CPU& cpu, float volatility, std::size_t simulation_steps, const std::vector<float>& current_prices, std::vector<float>& predicted_prices);
 
 int main() {
     std::cout << "Hello, World!" << std::endl;
@@ -24,6 +25,27 @@ int main() {
 
         for (std::size_t i = 0; i < result_y.size(); ++i) {
             std::cout << result_y[i] << " ";
+        }
+        std::cout << std::endl;
+    }
+    catch (const std::exception& exception) {
+        std::cerr << exception.what() << std::endl;
+        return 1;
+    }
+
+    std::cout << "MONTE CARLO" << std::endl;
+
+    try {
+        cpu_sim::RISCV_CPU cpu{8192};
+        float volatility = 0.05f;
+        std::size_t simulation_steps = 10;
+        std::vector<float> current_prices = {100.0f, 50.0f, 200.0f};
+        std::vector<float> predicted_prices = {0.0f, 0.0f, 0.0f};
+
+        monte_carlo_riscv_cpu(cpu, volatility, simulation_steps, current_prices, predicted_prices);
+
+        for (std::size_t i = 0; i < predicted_prices.size(); ++i) {
+            std::cout << predicted_prices[i] << " ";
         }
         std::cout << std::endl;
     }
