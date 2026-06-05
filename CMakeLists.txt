@@ -17,4 +17,5 @@ add_executable(CPUvGPU main.cpp
         saxpy/saxpy_riscv_cpu.cpp
         monte_carlo/monte_carlo_riscv_cpu.cpp
         bubble_sort/bubble_sort_riscv_cpu.cpp
+        constraint_solver/constraint_solver_riscv_cpu.cpp
 )

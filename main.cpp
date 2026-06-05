@@ -6,6 +6,7 @@
 void saxpy_riscv_cpu(cpu_sim::RISCV_CPU& cpu, float multiplier, const std::vector<float>& input_x, std::vector<float>& result_y);
 void monte_carlo_riscv_cpu(cpu_sim::RISCV_CPU& cpu, float volatility, std::size_t simulation_steps, const std::vector<float>& current_prices, std::vector<float>& predicted_prices);
 void bubble_sort_riscv_cpu(cpu_sim::RISCV_CPU& cpu, const std::vector<float>& input_elements, std::vector<float>& sorted_elements);
+void constraint_solver_riscv_cpu(cpu_sim::RISCV_CPU& cpu, int total_colors, const std::vector<int32_t>& graph_bitmasks, std::vector<int32_t>& color_assignments);
 
 int main() {
     std::cout << "Hello, World!" << std::endl;
@@ -80,6 +81,28 @@ int main() {
     }
     catch (const std::exception& error) {
         std::cerr << "Execution error: " << error.what() << "\n";
+        return 1;
+    }
+
+    std::cout << "CONSTRAINT SOLVER" << std::endl;
+
+    try {
+        std::vector<int32_t> graph_bitmasks = {2, 5, 2};
+        std::vector<int32_t> color_output(graph_bitmasks.size(), 0);
+        int total_colors_available = 3;
+
+        std::size_t required_memory = 2048;
+        cpu_sim::RISCV_CPU cpu(required_memory);
+
+        constraint_solver_riscv_cpu(cpu, total_colors_available, graph_bitmasks, color_output);
+
+        std::cout << "Node color configuration:\n";
+        for (std::size_t i = 0; i < color_output.size(); ++i) {
+            std::cout << "Node " << i << " -> Color Mask: " << color_output[i] << "\n";
+        }
+    }
+    catch (const std::exception& error) {
+        std::cerr << "Solver execution failed: " << error.what() << "\n";
         return 1;
     }
 
