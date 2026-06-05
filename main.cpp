@@ -1,6 +1,7 @@
 #include <iostream>
 #include <chrono>
 #include <vector>
+#include <string>
 #include "CPU/cpu_simulator.hpp"
 #include "GPU/gpu_simulator.hpp"
 
@@ -130,8 +131,6 @@ int main() {
     auto tempo_fim_programa = std::chrono::high_resolution_clock::now();
     std::chrono::duration<double, std::milli> duracao_total = tempo_fim_programa - tempo_inicio_programa;
 
-    std::cout << "Fim do contador CPU" << std::endl;
-
     std::cout << "..." << std::endl;
 
     std::cout << "GPU" << std::endl;
@@ -140,7 +139,29 @@ int main() {
     std::chrono::duration<double, std::milli> duracao_total_cpu = tempo_fim_cpu - tempo_inicio_programa;
 
     std::cout << "Fim do contador CPU" << std::endl;
-    std::cout << "Tempo Total do Programa: " << duracao_total_cpu.count() << " ms" << std::endl;
+
+    std::cout << "Iniciar Programa GPU? S/N ";
+
+    auto inicio_pausa_usuario = std::chrono::high_resolution_clock::now();
+
+    std::string input;
+    std::getline(std::cin, input);
+
+    if (input != "S" && input != "s") {
+        std::cout << "Tempo Total do Programa: " << duracao_total_cpu.count() << " ms" << std::endl;
+
+        return 0;
+    }
+    auto fim_pausa_usuario = std::chrono::high_resolution_clock::now();
+
+    auto tempo_atual_pos_input = std::chrono::high_resolution_clock::now();
+    std::chrono::duration<double, std::milli> tempo_bruto_total = tempo_atual_pos_input - tempo_inicio_programa;
+
+    std::chrono::duration<double, std::milli> tempo_da_pausa = fim_pausa_usuario - inicio_pausa_usuario;
+
+    std::chrono::duration<double, std::milli> duracao_total_descontada = tempo_bruto_total - tempo_da_pausa;
+
+    std::cout << "Tempo Total do Programa: " << duracao_total_descontada.count() << " ms" << std::endl;
 
     gpu_sim::GpuMemory vram(1024);
 
