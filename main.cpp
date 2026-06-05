@@ -74,6 +74,8 @@ int main() {
 
     std::cout << "BUBBLE SORT" << std::endl;
 
+    auto tempo_inicio_bubble_sort = std::chrono::high_resolution_clock::now();
+
     try {
         std::vector<float> input_data = {45.2f, 12.1f, 89.5f, 3.7f, 22.9f, 67.3f, 1.1f};
         std::vector<float> sorted_output(input_data.size(), 0.0f);
@@ -99,6 +101,11 @@ int main() {
         std::cerr << "Execution error: " << error.what() << "\n";
         return 1;
     }
+
+    auto tempo_fim_bubble_sort = std::chrono::high_resolution_clock::now();
+
+    std::chrono::duration<double, std::milli> duracao_bubble_sort = tempo_fim_bubble_sort - tempo_inicio_bubble_sort;
+    std::cout << "Tempo Bubble Sort: " << duracao_bubble_sort.count() << " ms" << std::endl;
 
     std::cout << "CONSTRAINT SOLVER" << std::endl;
 
@@ -131,14 +138,12 @@ int main() {
     auto tempo_fim_programa = std::chrono::high_resolution_clock::now();
     std::chrono::duration<double, std::milli> duracao_total = tempo_fim_programa - tempo_inicio_programa;
 
-    std::cout << "..." << std::endl;
-
-    std::cout << "GPU" << std::endl;
-
     auto tempo_fim_cpu = std::chrono::high_resolution_clock::now();
     std::chrono::duration<double, std::milli> duracao_total_cpu = tempo_fim_cpu - tempo_inicio_programa;
 
     std::cout << "Fim do contador CPU" << std::endl;
+
+    std::cout << "..." << std::endl;
 
     std::cout << "Iniciar Programa GPU? S/N ";
 
@@ -158,6 +163,8 @@ int main() {
     std::chrono::duration<double, std::milli> tempo_bruto_total = tempo_atual_pos_input - tempo_inicio_programa;
 
     std::chrono::duration<double, std::milli> tempo_da_pausa = fim_pausa_usuario - inicio_pausa_usuario;
+
+    std::cout << "GPU" << std::endl;
 
     std::chrono::duration<double, std::milli> duracao_total_descontada = tempo_bruto_total - tempo_da_pausa;
 
