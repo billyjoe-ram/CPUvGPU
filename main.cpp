@@ -5,6 +5,7 @@
 
 void saxpy_riscv_cpu(cpu_sim::RISCV_CPU& cpu, float multiplier, const std::vector<float>& input_x, std::vector<float>& result_y);
 void monte_carlo_riscv_cpu(cpu_sim::RISCV_CPU& cpu, float volatility, std::size_t simulation_steps, const std::vector<float>& current_prices, std::vector<float>& predicted_prices);
+void bubble_sort_riscv_cpu(cpu_sim::RISCV_CPU& cpu, const std::vector<float>& input_elements, std::vector<float>& sorted_elements);
 
 int main() {
     std::cout << "Hello, World!" << std::endl;
@@ -51,6 +52,34 @@ int main() {
     }
     catch (const std::exception& exception) {
         std::cerr << exception.what() << std::endl;
+        return 1;
+    }
+
+    std::cout << "BUBBLE SORT" << std::endl;
+
+    try {
+        std::vector<float> input_data = {45.2f, 12.1f, 89.5f, 3.7f, 22.9f, 67.3f, 1.1f};
+        std::vector<float> sorted_output(input_data.size(), 0.0f);
+
+        std::size_t required_memory = 400 + (input_data.size() * sizeof(float));
+        cpu_sim::RISCV_CPU cpu(required_memory);
+
+        bubble_sort_riscv_cpu(cpu, input_data, sorted_output);
+
+        std::cout << "Original elements: ";
+        for (float val : input_data) {
+            std::cout << val << " ";
+        }
+        std::cout << "\n";
+
+        std::cout << "Sorted elements:   ";
+        for (float val : sorted_output) {
+            std::cout << val << " ";
+        }
+        std::cout << "\n";
+    }
+    catch (const std::exception& error) {
+        std::cerr << "Execution error: " << error.what() << "\n";
         return 1;
     }
 
