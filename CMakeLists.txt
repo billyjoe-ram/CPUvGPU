@@ -21,4 +21,5 @@ add_executable(CPUvGPU main.cpp
         saxpy/saxpy_gpu.cpp
         monte_carlo/monte_carlo_gpu.cpp
         bubble_sort/bubble_sort_gpu.cpp
+        constraint_solver/constraint_solver_gpu.cpp
 )
